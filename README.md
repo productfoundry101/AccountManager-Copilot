@@ -17,7 +17,7 @@
 
 > **Placeholder.** Add a short screen recording at `docs/demo.gif` before publishing.
 
-**[▶ Live demo](https://ae-copilot-sanjeevrao.streamlit.app/)**  ·  **[📈 The quality journey](QUALITY_JOURNEY.md)**
+**[▶ Live demo](https://ae-copilot-demo.streamlit.app/)**  ·  **[📈 The quality journey](QUALITY_JOURNEY.md)**
 
 ---
 
