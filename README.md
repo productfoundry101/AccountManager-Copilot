@@ -1,8 +1,3 @@
-<!-- Replace the demo GIF below before publishing. Suggested: a 15-30s screen
-     recording of the live app answering a call-prep question, showing the
-     source chips and the "how this was calculated" panel. Drop the file at
-     docs/demo.gif (create the docs/ folder). -->
-
 # 🧭 AE Copilot
 
 **A grounded AI copilot for B2B sales that never guesses a fact.** It watches an Account Executive's book of accounts, flags the renewals quietly slipping away, and answers call-prep questions with a source on every claim. The hard parts (risk detection, counting, filtering) run in deterministic code, not model judgment, because in sales one wrong fact ends adoption.
@@ -13,11 +8,29 @@
 ![Data](https://img.shields.io/badge/data-100%25_synthetic-lightgrey)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-![AE Copilot demo](docs/demo.gif)
-
-> **Placeholder.** Add a short screen recording at `docs/demo.gif` before publishing.
+![AE Copilot dashboard: signed-in AE, live book overview, and natural-language chat](assets/annotated/01-dashboard.png)
 
 **[▶ Live demo](https://ae-copilot-demo.streamlit.app/)**  ·  **[📈 The quality journey](QUALITY_JOURNEY.md)**
+
+### Product tour
+
+**Answers are built from the live CRM and knowledge docs in real time, not the model's memory.**
+![Live data fetch](assets/annotated/02-live-data.png)
+
+**One question sweeps all 41 accounts, ranks today's priorities, and cites every claim to its source.**
+![Full-book sweep with citations](assets/annotated/03-full-book-sweep.png)
+
+**Users rate any answer or report a discrepancy; reported discrepancies become new evaluation cases.**
+![Feedback loop](assets/annotated/04-feedback.png)
+
+**Progressive disclosure: the method behind each answer, down to the exact SQL, on demand.**
+![Explainability panel](assets/annotated/05-explainability.png)
+
+**Correct scoping and full coverage: it separates customers from prospects and scans the whole book, not a top-5 view.**
+![Scope and coverage](assets/annotated/06-scope-coverage.png)
+
+**Exact aggregation computed in SQL, not model arithmetic.**
+![Exact SQL math](assets/annotated/07-exact-math.png)
 
 ---
 
