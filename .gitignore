@@ -1,0 +1,11 @@
+# --- secrets: never committed -------------------------------------------
+.env
+.streamlit/secrets.toml
+
+# --- python / macOS noise -----------------------------------------------
+__pycache__/
+*.pyc
+.DS_Store
+
+# Everything else is intentionally published, including the sample traces/,
+# feedback/, digests/, and the eval results JSON. All data is synthetic.
