@@ -1,0 +1,34 @@
+name: Keep Streamlit app awake
+
+# Streamlit Community Cloud puts an app to sleep after 12 quiet hours.
+# This job visits the app on a schedule with a real browser (a plain curl
+# would get HTTP 200 on the sleep page and NOT wake it) and clicks the
+# "get this app back up" button if it finds the app sleeping, which resets
+# the 12-hour timer.
+#
+# Note: GitHub automatically disables scheduled workflows after 60 days with
+# no new commits to the repo. Push any commit, or click "Enable workflow" in
+# the Actions tab, to keep it running.
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # every 6 hours; max gap stays well under 12h
+  workflow_dispatch:          # lets you run it manually from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    env:
+      # If your live URL changes (e.g. after redeploying), edit this one line.
+      APP_URL: https://ae-copilot-sanjeevrao.streamlit.app/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Playwright + Chromium
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Visit app and wake it if asleep
+        run: python .github/scripts/keepalive.py
