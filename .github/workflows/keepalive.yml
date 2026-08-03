@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # If your live URL changes (e.g. after redeploying), edit this one line.
-      APP_URL: https://ae-copilot-sanjeevrao.streamlit.app/
+      APP_URL: https://ae-copilot-demo.streamlit.app/
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
