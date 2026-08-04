@@ -1,4 +1,4 @@
-# AE Copilot
+# 🧭 AE Copilot
 
 A grounded AI copilot for B2B sales. It watches an account executive's book, flags the renewals that are quietly slipping, and answers call-prep questions with a source on every claim. The parts where being wrong is unacceptable, risk detection, counting, and filtering, run in plain code rather than the model.
 
@@ -22,7 +22,7 @@ The method behind each answer is one click away, down to the exact SQL.
 
 ---
 
-## What it is
+## ℹ️ What it is
 
 An independent prototype, built to show one idea end to end: an AI assistant that business users can actually trust.
 
@@ -30,7 +30,7 @@ An independent prototype, built to show one idea end to end: an AI assistant tha
 - Quality is measured. 26 unit tests and 25 eval cases gate every change, graded by the opposite provider so the system does not grade its own answers. The full testing story is in [QUALITY_JOURNEY.md](QUALITY_JOURNEY.md).
 - Provider-agnostic and read-only. Runs on OpenAI or Anthropic behind one switch, with no write access and no customer-facing text.
 
-## What it demonstrates
+## 💡 What it demonstrates
 
 - Anti-hallucination design: grounding rules, honest refusal, a source on every fact, and a clear line on what the model may and may not do.
 - Eval-driven development: an executable definition of "good," a deterministic-plus-judge harness, and red-teaming, taking the suite from 8 of 12 passing to holding under repeated reliability runs.
@@ -39,7 +39,7 @@ An independent prototype, built to show one idea end to end: an AI assistant tha
 
 ---
 
-## The problem it solves
+## 🎯 The problem it solves
 
 A mid-market account executive can spend five or more hours preparing for a single call. This tool surfaces the signal already in the data that nobody flags in time: a usage drop, a renewal window opening, a single-threaded deal with no economic buyer, a competitor named in a QBR note, an unresolved P1 ticket.
 
@@ -47,7 +47,7 @@ Two principles shape it. AEs need the signals they are missing, not a summary of
 
 ---
 
-## Four core capabilities
+## ⚡ Four core capabilities
 
 1. Proactive risk detection. A deterministic engine (`signals.py`) checks 14 signal types against an account: usage decline, renewal windows, stalled deals, single-threading, missing buyer personas, quiet accounts, open and recent P1 tickets, competitor mentions, and data-quality problems. Each fired signal carries its evidence and the playbook rule behind it. The model ranks and explains signals but cannot invent one.
 2. Multi-turn chat with citations. The AE asks anything about their accounts across turns. It fetches live data at the moment of the question, leads with what changed and what to flag, and sources every fact inline. The tool calls and exact SQL are one click away.
@@ -58,7 +58,7 @@ Under all of these sit honest refusal ("the CRM has no record of that," never a 
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 Risk detection, reference matching, prioritization, and every count are hand-written code. The model orchestrates tools and explains results; it cannot assert a risk the rules did not fire, cite a document it did not read, or write SQL.
 
@@ -109,17 +109,14 @@ A call-prep question flows like this: the UI sends the conversation and the AE's
 
 ---
 
-## Quality
+## ✅ Quality
 
 Four layers, from strict to human.
 
-Deterministic checks. 26 unit tests (`evals/unit_tests.py`, no LLM, seconds to run) plus deterministic assertions on all 25 eval cases: which tools an answer had to call, the hard facts that must appear, and patterns that catch an invented number.
-
-LLM-as-judge. 8 of the 25 cases add a binary pass/fail rubric for the semantic criteria, like whether it refused cleanly, flagged the data-quality problem, or gave a concrete discount answer. Graded at temperature 0 by the opposite provider, and the judge itself is audited against hand labels.
-
-Trace logging. Every conversation is logged with timestamp, AE, provider, question, tool calls, results, answer, latency, and estimated cost, so failures can be reviewed against a real record.
-
-Closed feedback loop. Any answer can be marked useful or not, or reported as a discrepancy, and it all lands in `feedback/`. Every verified discrepancy becomes a new eval case.
+1. Deterministic checks. 26 unit tests (`evals/unit_tests.py`, no LLM, seconds to run) plus deterministic assertions on all 25 eval cases: which tools an answer had to call, the hard facts that must appear, and patterns that catch an invented number.
+2. LLM-as-judge. 8 of the 25 cases add a binary pass/fail rubric for the semantic criteria, like whether it refused cleanly, flagged the data-quality problem, or gave a concrete discount answer. Graded at temperature 0 by the opposite provider, and the judge itself is audited against hand labels.
+3. Trace logging. Every conversation is logged with timestamp, AE, provider, question, tool calls, results, answer, latency, and estimated cost, so failures can be reviewed against a real record.
+4. Closed feedback loop. Any answer can be marked useful or not, or reported as a discrepancy, and it all lands in `feedback/`. Every verified discrepancy becomes a new eval case.
 
 Run `python evals/unit_tests.py` then `python evals/run_evals.py` before any prompt or rule change.
 
@@ -129,7 +126,7 @@ The assistant did not start reliable. The first suite passed 8 of 12 cases. The 
 
 ---
 
-## Key technical choices and trade-offs
+## ⚖️ Key technical choices and trade-offs
 
 | Choice | Alternative rejected | Why, and the trade-off |
 |---|---|---|
@@ -144,7 +141,7 @@ Guardrails, in short: read-only; no customer-facing text; every tool validates i
 
 ---
 
-## Run it yourself
+## 🚀 Run it yourself
 
 Fastest is the [live demo](https://ae-copilot-demo.streamlit.app/). To run locally:
 
@@ -176,7 +173,7 @@ Snowflake credentials are only needed for `DATA_MODE=live`; see `.env.example`.
 
 ---
 
-## Data and limitations
+## ⚠️ Data and limitations
 
 All data in this repo is synthetic; any resemblance to a real business is coincidental. The dataset stops on 2026-05-31, which has three consequences handled in code:
 
@@ -184,11 +181,11 @@ All data in this repo is synthetic; any resemblance to a real business is coinci
 - The usage data contains impossible negative values. They are excluded from trend math, and the assistant says it did so rather than dropping them silently.
 - Signal thresholds (for example a 20% MAU drop, or a 90-day renewal window) are hardcoded in `signals.py`. Custom-threshold requests are out of scope.
 
-## Out of scope
+## ✂️ Out of scope
 
 Agentic actions (drafting emails, writing to the CRM), latent-intent inference, cross-session memory, custom thresholds, and integrations (Slack, email, calendar, call recording). Each is a deliberate cut with an upgrade path. The digest's send step is a stub; in production it is a Slack DM per AE.
 
-## About
+## 👋 About
 
 Built by Sanjeev Rao as an independent demonstration of grounded, eval-driven AI product work. If you are hiring or want something like this for your sales team, the code and the [quality journey](QUALITY_JOURNEY.md) show how I work.
 
