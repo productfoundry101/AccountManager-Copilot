@@ -4,8 +4,6 @@ A grounded AI copilot for B2B sales. It watches an account executive's book, fla
 
 ![Python](https://img.shields.io/badge/python-3.10+-blue)
 ![Tests](https://img.shields.io/badge/tests-26_unit_%2B_25_eval-brightgreen)
-![Providers](https://img.shields.io/badge/LLM-OpenAI_or_Anthropic-black)
-![Data](https://img.shields.io/badge/data-100%25_synthetic-lightgrey)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ![AE Copilot dashboard: signed-in AE, live book overview, and natural-language chat](assets/annotated/01-dashboard.png)
@@ -24,7 +22,7 @@ The method behind each answer is one click away, down to the exact SQL.
 
 ## ℹ️ What it is
 
-An independent prototype, built to show one idea end to end: an AI assistant that business users can actually trust.
+A prototype built to show one idea end to end: an AI assistant that business users can actually trust.
 
 - The rule engine finds the risks and does every count. The model orchestrates tools and writes the answer. It cannot invent a risk, cite a document it never read, or do arithmetic over rows.
 - Quality is measured. 26 unit tests and 25 eval cases gate every change, graded by the opposite provider so the system does not grade its own answers. The full testing story is in [QUALITY_JOURNEY.md](QUALITY_JOURNEY.md).
@@ -49,10 +47,10 @@ Two principles shape it. AEs need the signals they are missing, not a summary of
 
 ## ⚡ Four core capabilities
 
-1. Proactive risk detection. A deterministic engine (`signals.py`) checks 14 signal types against an account: usage decline, renewal windows, stalled deals, single-threading, missing buyer personas, quiet accounts, open and recent P1 tickets, competitor mentions, and data-quality problems. Each fired signal carries its evidence and the playbook rule behind it. The model ranks and explains signals but cannot invent one.
-2. Multi-turn chat with citations. The AE asks anything about their accounts across turns. It fetches live data at the moment of the question, leads with what changed and what to flag, and sources every fact inline. The tool calls and exact SQL are one click away.
-3. Grounded enablement lookup. The right battlecard section when a competitor is in play, the case study matching the account's industry and region, the playbook guidance for the stage. It only cites a document it actually retrieved.
-4. Proactive morning digest. The same engine on a schedule across the book, ranked and composed into a short brief. Delivery is a labeled dry run in the prototype.
+1. **Proactive risk detection:** A deterministic engine (`signals.py`) checks 14 signal types against an account: usage decline, renewal windows, stalled deals, single-threading, missing buyer personas, quiet accounts, open and recent P1 tickets, competitor mentions, and data-quality problems. Each fired signal carries its evidence and the playbook rule behind it. The model ranks and explains signals but cannot invent one.
+2. **Multi-turn chat with citations:** The AE asks anything about their accounts across turns. It fetches live data at the moment of the question, leads with what changed and what to flag, and sources every fact inline. The tool calls and exact SQL are one click away.
+3. **Grounded enablement lookup:** The right battlecard section when a competitor is in play, the case study matching the account's industry and region, the playbook guidance for the stage. It only cites a document it actually retrieved.
+4. **Proactive morning digest:** The same engine on a schedule across the book, ranked and composed into a short brief. Delivery is a labeled dry run in the prototype.
 
 Under all of these sit honest refusal ("the CRM has no record of that," never a guess) and a closed feedback loop.
 
