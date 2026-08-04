@@ -36,20 +36,18 @@
 
 ## TL;DR
 
-This is an independent prototype, built on a fully synthetic CRM dataset (no real company or customer data). It exists to demonstrate one idea end to end: **you can build an AI assistant that business users actually trust, by keeping the model out of the parts where being wrong is unacceptable.**
+This is an independent prototype and exists to demonstrate one idea end to end: **you can build an AI assistant that business users actually trust.**
 
 - **Detection is deterministic, explanation is probabilistic.** A hand-written rule engine finds the risks and does every count; the model orchestrates tools and writes the answer. It cannot invent a risk, cite a document it never read, or do arithmetic over rows.
-- **Quality is measured, not assumed.** 26 unit tests and 25 eval cases gate every change, graded by a cross-provider LLM judge so the system never grades its own homework. The full testing story, including every bug found and fixed, is in [QUALITY_JOURNEY.md](QUALITY_JOURNEY.md).
+- **Quality is measured and improved over time.** 26 unit tests and 25 eval cases gate every change, graded by a cross-provider LLM judge so the system never grades its own homework. The full testing story, including every bug found and fixed, is in [QUALITY_JOURNEY.md](QUALITY_JOURNEY.md).
 - **Provider-agnostic and read-only.** Runs on OpenAI or Anthropic behind one switch. No write access to the CRM, no customer-facing text generation.
 
 ---
 
 ## What this demonstrates
 
-If you are evaluating this as evidence of AI product and engineering skill, here is what it shows:
-
 - **Anti-hallucination system design** for a trust-critical domain: grounding contracts, honest refusal, provenance on every fact, and a clear line between what the model may and may not do.
-- **Eval-driven development**: an executable definition of "good," a deterministic-plus-LLM-judge harness, red-teaming, and a suite that only ratchets. The assistant went from 8/12 to a suite that holds under repeated 3x reliability runs.
+- **Eval-driven development**: an executable definition of "good," a deterministic-plus-LLM-judge harness and red-teaming. The assistant went from 8/12 to a suite that holds under repeated 3x reliability runs.
 - **Pragmatic architecture**: a ~40-line agent loop with no framework, exact retrieval instead of a vector database at this corpus size, and a data layer that runs identical SQL over a local snapshot or live Snowflake.
 - **Production instincts**: observability (every conversation traced), a closed feedback loop, scoped data access that can't be spoofed by a prompt, and deliberate scope cuts with stated upgrade paths.
 
@@ -57,7 +55,7 @@ If you are evaluating this as evidence of AI product and engineering skill, here
 
 ## 🎯 The problem it solves
 
-The user is a mid-market Account Executive carrying a book of roughly 40 accounts. This tool does not summarize what they already know. It surfaces the signal sitting in the data that nobody flags in time: a usage drop, a renewal window opening, a single-threaded deal with no economic buyer, a competitor named in a QBR note, an unresolved P1 ticket.
+The user is a mid-market Account Executive spending 5+ hours preparing for a customer call. This tool surfaces the signal sitting in the data that nobody flags in time: a usage drop, a renewal window opening, a single-threaded deal with no economic buyer, a competitor named in a QBR note, an unresolved P1 ticket.
 
 Two principles shape the build:
 
