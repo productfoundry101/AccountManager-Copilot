@@ -1,6 +1,6 @@
-# 🧭 AE Copilot
+# AE Copilot
 
-**A grounded AI copilot for B2B sales that never guesses a fact.** It watches an Account Executive's book of accounts, flags the renewals quietly slipping away, and answers call-prep questions with a source on every claim. The hard parts (risk detection, counting, filtering) run in deterministic code, not model judgment, because in sales one wrong fact ends adoption.
+A grounded AI copilot for B2B sales. It watches an account executive's book, flags the renewals that are quietly slipping, and answers call-prep questions with a source on every claim. The parts where being wrong is unacceptable, risk detection, counting, and filtering, run in plain code rather than the model.
 
 ![Python](https://img.shields.io/badge/python-3.10+-blue)
 ![Tests](https://img.shields.io/badge/tests-26_unit_%2B_25_eval-brightgreen)
@@ -10,74 +10,57 @@
 
 ![AE Copilot dashboard: signed-in AE, live book overview, and natural-language chat](assets/annotated/01-dashboard.png)
 
-**[▶ Live demo](https://ae-copilot-demo.streamlit.app/)**  ·  **[📈 The quality journey](QUALITY_JOURNEY.md)**
+**[▶ Live demo](https://ae-copilot-demo.streamlit.app/)**  ·  **[The quality journey](QUALITY_JOURNEY.md)**
 
-### Product tour
+### A closer look
 
-**Answers are built from the live CRM and knowledge docs in real time, not the model's memory.**
-![Live data fetch](assets/annotated/02-live-data.png)
-
-**One question sweeps all 41 accounts, ranks today's priorities, and cites every claim to its source.**
-![Full-book sweep with citations](assets/annotated/03-full-book-sweep.png)
-
-**Users rate any answer or report a discrepancy; reported discrepancies become new evaluation cases.**
+Users can rate any answer or report a discrepancy, and reported discrepancies become new evaluation cases.
 ![Feedback loop](assets/annotated/04-feedback.png)
 
-**Progressive disclosure: the method behind each answer, down to the exact SQL, on demand.**
+The method behind each answer is one click away, down to the exact SQL.
 ![Explainability panel](assets/annotated/05-explainability.png)
 
-**Correct scoping and full coverage: it separates customers from prospects and scans the whole book, not a top-5 view.**
-![Scope and coverage](assets/annotated/06-scope-coverage.png)
+---
 
-**Exact aggregation computed in SQL, not model arithmetic.**
-![Exact SQL math](assets/annotated/07-exact-math.png)
+## What it is
+
+An independent prototype, built to show one idea end to end: an AI assistant that business users can actually trust.
+
+- The rule engine finds the risks and does every count. The model orchestrates tools and writes the answer. It cannot invent a risk, cite a document it never read, or do arithmetic over rows.
+- Quality is measured. 26 unit tests and 25 eval cases gate every change, graded by the opposite provider so the system does not grade its own answers. The full testing story is in [QUALITY_JOURNEY.md](QUALITY_JOURNEY.md).
+- Provider-agnostic and read-only. Runs on OpenAI or Anthropic behind one switch, with no write access and no customer-facing text.
+
+## What it demonstrates
+
+- Anti-hallucination design: grounding rules, honest refusal, a source on every fact, and a clear line on what the model may and may not do.
+- Eval-driven development: an executable definition of "good," a deterministic-plus-judge harness, and red-teaming, taking the suite from 8 of 12 passing to holding under repeated reliability runs.
+- Pragmatic architecture: a ~40-line agent loop with no framework, exact retrieval instead of a vector database at this size, and one data layer that runs the same SQL over a snapshot or live Snowflake.
+- Production instincts: every conversation traced, a closed feedback loop, access scoped to the signed-in user, and scope cuts with upgrade paths.
 
 ---
 
-## TL;DR
+## The problem it solves
 
-This is an independent prototype and exists to demonstrate one idea end to end: **you can build an AI assistant that business users actually trust.**
+A mid-market account executive can spend five or more hours preparing for a single call. This tool surfaces the signal already in the data that nobody flags in time: a usage drop, a renewal window opening, a single-threaded deal with no economic buyer, a competitor named in a QBR note, an unresolved P1 ticket.
 
-- **Detection is deterministic, explanation is probabilistic.** A hand-written rule engine finds the risks and does every count; the model orchestrates tools and writes the answer. It cannot invent a risk, cite a document it never read, or do arithmetic over rows.
-- **Quality is measured and improved over time.** 26 unit tests and 25 eval cases gate every change, graded by a cross-provider LLM judge so the system never grades its own homework. The full testing story, including every bug found and fixed, is in [QUALITY_JOURNEY.md](QUALITY_JOURNEY.md).
-- **Provider-agnostic and read-only.** Runs on OpenAI or Anthropic behind one switch. No write access to the CRM, no customer-facing text generation.
+Two principles shape it. AEs need the signals they are missing, not a summary of what they know, so the core is a rule engine rather than a chatbot narrating the CRM. And one wrong fact ends adoption, so every claim is sourced and the risky work is code, not the model.
 
 ---
 
-## What this demonstrates
+## Four core capabilities
 
-- **Anti-hallucination system design** for a trust-critical domain: grounding contracts, honest refusal, provenance on every fact, and a clear line between what the model may and may not do.
-- **Eval-driven development**: an executable definition of "good," a deterministic-plus-LLM-judge harness and red-teaming. The assistant went from 8/12 to a suite that holds under repeated 3x reliability runs.
-- **Pragmatic architecture**: a ~40-line agent loop with no framework, exact retrieval instead of a vector database at this corpus size, and a data layer that runs identical SQL over a local snapshot or live Snowflake.
-- **Production instincts**: observability (every conversation traced), a closed feedback loop, scoped data access that can't be spoofed by a prompt, and deliberate scope cuts with stated upgrade paths.
+1. Proactive risk detection. A deterministic engine (`signals.py`) checks 14 signal types against an account: usage decline, renewal windows, stalled deals, single-threading, missing buyer personas, quiet accounts, open and recent P1 tickets, competitor mentions, and data-quality problems. Each fired signal carries its evidence and the playbook rule behind it. The model ranks and explains signals but cannot invent one.
+2. Multi-turn chat with citations. The AE asks anything about their accounts across turns. It fetches live data at the moment of the question, leads with what changed and what to flag, and sources every fact inline. The tool calls and exact SQL are one click away.
+3. Grounded enablement lookup. The right battlecard section when a competitor is in play, the case study matching the account's industry and region, the playbook guidance for the stage. It only cites a document it actually retrieved.
+4. Proactive morning digest. The same engine on a schedule across the book, ranked and composed into a short brief. Delivery is a labeled dry run in the prototype.
 
----
-
-## 🎯 The problem it solves
-
-The user is a mid-market Account Executive spending 5+ hours preparing for a customer call. This tool surfaces the signal sitting in the data that nobody flags in time: a usage drop, a renewal window opening, a single-threaded deal with no economic buyer, a competitor named in a QBR note, an unresolved P1 ticket.
-
-Two principles shape the build:
-
-1. **AEs need missed signals, not summaries.** The core is a deterministic rule engine, not a chatbot narrating the CRM back to you.
-2. **Trust is fragile and asymmetric.** One wrong fact or bad citation ends adoption. So every claim is sourced, the assistant refuses rather than guesses, and the risky work (detection, counting, filtering) is hand-written code, not model judgment.
+Under all of these sit honest refusal ("the CRM has no record of that," never a guess) and a closed feedback loop.
 
 ---
 
-## ⚡ Four core capabilities
+## Architecture
 
-1. **Proactive risk and gap detection.** A deterministic engine (`signals.py`) evaluates 14 signal types against an account: usage decline, renewal windows, overdue or stalled deals, single-threading, missing buyer personas, quiet accounts, open and recent-P1 tickets, competitor mentions, data-quality problems. Each fired signal carries its evidence and the playbook rule behind it. The model prioritizes and explains signals; it cannot invent one the rules did not fire.
-2. **Multi-turn chat copilot with citations.** The AE asks anything about their accounts, across turns. It fetches live data at the moment of the question, leads a call-prep answer with what changed and what to flag, and sources every fact inline. Tool calls and the exact SQL are one click away.
-3. **Grounded enablement lookup.** The right battlecard section when a competitor is in play, the case study matching the account's industry and region, the playbook guidance for the deal stage. It only cites a document it actually retrieved.
-4. **Proactive morning digest.** The same engine on a schedule across the whole book, ranked under one framework and composed into a short brief. Delivery is a labeled dry run in the prototype.
-
-Two behaviors sit under these rather than beside them: **honest refusal** ("the CRM has no record of that," never a guess) and a **closed feedback loop** (see [Quality](#-quality-how-i-know-it-works)).
-
----
-
-## 🏗️ Architecture
-
-🔑 **Detection is deterministic, explanation is probabilistic.** Risk signals, reference matching, prioritization, and every count and aggregation are hand-written code. The model orchestrates tools and explains results; it cannot assert a risk the rules did not fire, cite a document it did not read, run a data operation it is not configured for, or write SQL. All queries are hand-written and parameterized.
+Risk detection, reference matching, prioritization, and every count are hand-written code. The model orchestrates tools and explains results; it cannot assert a risk the rules did not fire, cite a document it did not read, or write SQL.
 
 ```mermaid
 flowchart TD
@@ -104,15 +87,7 @@ flowchart TD
     EVALS[evals/<br/>executable 'good enough'] -.tests.-> AGENT
 ```
 
-How a single call-prep question flows through the system:
-
-1. The UI sends the conversation plus the signed-in AE's identity to `agent.py`.
-2. The model resolves the account, then runs the risk sweep proactively.
-3. It pulls detail: opportunities, activities, and for customers usage and tickets.
-4. It retrieves any relevant battlecard or case study through the knowledge tools.
-5. It composes an answer in the AE's shape (what changed, what to flag) with a source on every fact.
-
-Nothing is special-cased per account; the same machinery runs for any of the 75 accounts.
+A call-prep question flows like this: the UI sends the conversation and the AE's identity to `agent.py`; the model resolves the account, runs the risk sweep, pulls the relevant opportunities, activities, usage, and tickets, and retrieves any battlecard or case study; then it composes an answer with a source on every fact. Nothing is special-cased per account; the same machinery runs for all 75.
 
 ### Project structure
 
@@ -120,62 +95,58 @@ Nothing is special-cased per account; the same machinery runs for any of the 75 
 |---|---|
 | `db.py` | The only file that touches data. Dual-mode behind one switch: `snapshot` runs SQL over local CSVs with DuckDB; `live` runs the identical SQL against Snowflake. |
 | `signals.py` | Deterministic risk rules, each with a hardcoded threshold traceable to a playbook section. A rule fires with evidence or stays silent. |
-| `knowledge.py` | Loads the seven enablement docs and serves them by section. No vector database; exact retrieval at this corpus size (~40KB) is more reliable and fully explainable. |
-| `tools.py` | The 14 typed functions the model may call. Thin wrappers over `db.py` and `signals.py`; each validates its inputs and returns an instructive error rather than an empty success. |
-| `agent.py` | The brain. Provider-agnostic tool-calling loop (no agent framework), the system prompt that encodes the grounding contract, and per-conversation trace logging. |
-| `app.py` | Streamlit chat UI: AE-facing source chips and a deterministic login briefing; raw tool calls, method cards, and SQL one click away for engineers. |
+| `knowledge.py` | Loads the enablement docs and serves them by section. No vector database; exact retrieval at this corpus size (~40KB) is more reliable and fully explainable. |
+| `tools.py` | The 14 typed functions the model may call, over `db.py` and `signals.py`. Each validates its inputs and returns an instructive error, never an empty success. |
+| `agent.py` | The provider-agnostic tool-calling loop (no framework), the system prompt that encodes the grounding rules, and per-conversation trace logging. |
+| `app.py` | Streamlit chat UI: source chips and a login briefing for the AE; raw tool calls, method cards, and SQL one click away for engineers. |
 | `cli.py` | Terminal chat, same agent, zero UI dependencies. |
-| `briefing.py` | Deterministic login landing rendered inside the chat window (book overview plus tailored question starters). Zero LLM calls. |
-| `digest.py` | Proactive morning brief across an AE's book, ranked by severity. Delivery is a labeled dry run. |
+| `briefing.py` | Deterministic login landing (book overview plus tailored question starters). Zero LLM calls. |
+| `digest.py` | Morning brief across an AE's book, ranked by severity. Delivery is a labeled dry run. |
 | `evals/` | `cases.py` (25 eval cases), `run_evals.py` (the gate), `unit_tests.py` (26 tool-layer checks), and saved `results_*.json` runs. |
 | `data/` | Six snapshot CSVs: accounts, opportunities, contacts, activities, usage, tickets. All synthetic. |
-| `knowledge/` | The seven enablement docs: playbook, ICP, Keystone and Bloom battlecards, objection handling, pricing cheatsheet, case studies. |
-| `traces/`, `feedback/`, `digests/` | Runtime output. Sample runs are committed here so you can see the shape of the observability and feedback data; in production they accumulate real AE conversations. |
+| `knowledge/` | Seven enablement docs: playbook, ICP, Keystone and Bloom battlecards, objection handling, pricing cheatsheet, case studies. |
+| `traces/`, `feedback/`, `digests/` | Runtime output. Sample runs are committed so you can see the shape of the data; in production they accumulate real AE conversations. |
 
 ---
 
-## ✅ Quality: how I know it works
+## Quality
 
 Four layers, from strict to human.
 
-**Tier 1: Deterministic checks.** 26 tool-layer unit tests (`evals/unit_tests.py`, no LLM, runs in seconds) plus deterministic assertions on all 25 eval cases: tool-usage requirements (a call-prep answer that never fetched the opportunities is wrong even if it reads well), hard facts that must appear (numbers and names, stable across phrasings), and forbidden-fabrication patterns that check for the crime, an invented number, rather than the apology.
+Deterministic checks. 26 unit tests (`evals/unit_tests.py`, no LLM, seconds to run) plus deterministic assertions on all 25 eval cases: which tools an answer had to call, the hard facts that must appear, and patterns that catch an invented number.
 
-**Tier 2: LLM-as-judge.** 8 of the 25 eval cases add a binary PASS/FAIL rubric for criteria that are semantic by nature (did it refuse cleanly, did it flag the data-quality problem, was the discount answer concrete). Graded at temperature 0 by the *opposite* provider from the one that produced the answer, so the system never grades its own homework. Judges are themselves audited by hand-labeling a sample of verdicts.
+LLM-as-judge. 8 of the 25 cases add a binary pass/fail rubric for the semantic criteria, like whether it refused cleanly, flagged the data-quality problem, or gave a concrete discount answer. Graded at temperature 0 by the opposite provider, and the judge itself is audited against hand labels.
 
-**Tier 3: Trace logging.** Every conversation is logged with timestamp, AE, provider, question, tool calls, results, answer, latency, and estimated cost. A clean, auditable record to review failures against, not vibes.
+Trace logging. Every conversation is logged with timestamp, AE, provider, question, tool calls, results, answer, latency, and estimated cost, so failures can be reviewed against a real record.
 
-**Tier 4: Closed feedback loop.** Every answer can be marked useful or not, or reported as a discrepancy, in the UI; all of it lands in `feedback/`. Every verified discrepancy becomes a new eval case, so a fixed bug can never silently return.
-
-The suite only ratchets: it grew from 12 to 25 cases over the build. Each failure the tests caught was fixed by moving a responsibility (matching, counting, filtering, provenance, validation) out of the model and into deterministic code, then locked behind a regression test so the same bug cannot return.
+Closed feedback loop. Any answer can be marked useful or not, or reported as a discrepancy, and it all lands in `feedback/`. Every verified discrepancy becomes a new eval case.
 
 Run `python evals/unit_tests.py` then `python evals/run_evals.py` before any prompt or rule change.
 
-### 📈 The quality journey
+### The quality journey
 
-The assistant did not start reliable. The first eval suite passed 8 of 12 cases. The current suite passes all 25 on a single run and 26 of 26 unit tests; under a stricter reliability check (every case run three times on both providers) it holds at 24 of 25 cases per provider, with one residual flaky case that differs by provider. In between, manual red-teaming surfaced real bugs: a pipeline total off by roughly a million euros, a churn-risk account silently dropped from a "which customers are declining" answer, a set-membership question answered with zero tool calls. Each bug was traced to a root cause, fixed at the right layer, and turned into a test.
-
-[**QUALITY_JOURNEY.md**](QUALITY_JOURNEY.md) is the full audit: the score timeline round by round, and a taxonomy of every failure found, why it happened, where it was fixed, and the regression guard that now prevents it. It is the most honest part of this repo and the part worth reading if you care how the thing was actually built.
+The assistant did not start reliable. The first suite passed 8 of 12 cases. The current one passes all 25 on a single run and 26 of 26 unit tests, and under a stricter check (every case run three times on both providers) it holds at 24 of 25 per provider, with one flaky case. Along the way, red-teaming surfaced real bugs: a pipeline total off by about a million euros, a churn-risk account dropped from a "which customers are declining" answer, a set-membership question answered with no tool calls. Each was traced to a cause, fixed, and turned into a test. [QUALITY_JOURNEY.md](QUALITY_JOURNEY.md) has the round-by-round timeline and a taxonomy of every failure.
 
 ---
 
-## ⚖️ Key technical choices and trade-offs
+## Key technical choices and trade-offs
 
 | Choice | Alternative rejected | Why, and the trade-off |
 |---|---|---|
 | Deterministic signal rules | Ask the LLM to spot risks | Same account, same output, every time; individually testable; provenance built in. Trade-off: thresholds are fixed (see limitations). |
-| The model never writes SQL | Free-form text-to-SQL | Hallucinated joins are wrong-fact factories, and trust is the whole game. 14 curated, validated tools cover every access pattern. Trade-off: less flexibility on exotic one-off questions. |
-| No agent framework | LangChain / LlamaIndex / vendor agent SDKs | The loop is ~40 lines and every line is explainable. Fewer moving parts, full visibility. |
+| The model never writes SQL | Free-form text-to-SQL | Hallucinated joins produce wrong facts, and trust is everything here. 14 curated, validated tools cover every access pattern. Trade-off: less flexibility on exotic one-off questions. |
+| No agent framework | LangChain / LlamaIndex / vendor agent SDKs | The loop is about 40 lines and every line is explainable. Fewer moving parts, full visibility. |
 | Direct doc loading by section | Vector database + embeddings | Seven small files. Exact section retrieval beats approximate search here and stays explainable. At a few hundred docs this becomes hybrid search. |
 | Read-only by design | Write access to CRM | No write tools are configured; the assistant cannot mutate the data or the knowledge base. A prototype that writes to the CRM is a liability. |
 | No customer-facing text generation | Draft emails and call scripts | It prepares the AE, it does not speak for them. Removes a whole class of hallucination risk. |
 
-**Guardrails**, in one place: read-only; no customer-facing text; every tool validates its inputs (a malformed or hallucinated account ID returns an instructive error, never an empty success the model narrates as "no data"); scoped data access (the signed-in AE's identity is set at login and never taken from model text, so "whose book" cannot be spoofed by a prompt).
+Guardrails, in short: read-only; no customer-facing text; every tool validates its inputs and returns an instructive error instead of an empty success; and data access is scoped to the signed-in AE at login, so the model text cannot change whose book it sees.
 
 ---
 
-## 🚀 Run it yourself
+## Run it yourself
 
-The fastest way to try it is the [live demo](https://ae-copilot-sanjeevrao.streamlit.app/). To run locally:
+Fastest is the [live demo](https://ae-copilot-demo.streamlit.app/). To run locally:
 
 ```bash
 pip install -r requirements.txt
@@ -183,13 +154,13 @@ cp .env.example .env        # add your API key(s)
 streamlit run app.py        # chat UI
 ```
 
-Terminal fallback, identical agent, no UI dependencies:
+Terminal fallback, same agent, no UI dependencies:
 
 ```bash
 python cli.py
 ```
 
-Both surfaces run the same agent in `agent.py`; the UI is disposable.
+Both run the same agent in `agent.py`.
 
 ### Configuration (`.env`)
 
@@ -198,31 +169,27 @@ Both surfaces run the same agent in `agent.py`; the UI is disposable.
 | `LLM_PROVIDER` | `openai` / `anthropic` | which model runs the agent |
 | `OPENAI_MODEL` / `ANTHROPIC_MODEL` | model name | defaults: `gpt-4o`, `claude-sonnet-5` |
 | `DATA_MODE` | `snapshot` / `live` | local CSVs (dev, test, hosted demo) or Snowflake |
-| `AS_OF_DATE` | date | the agent's "today" (see [Data notes](#-data-notes-and-limitations)) |
+| `AS_OF_DATE` | date | the agent's "today" (see Data and limitations) |
 | `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` | key | secrets stay in `.env`, which is gitignored |
 
-Snowflake credentials are only needed when `DATA_MODE=live`; see `.env.example` for the auth options.
+Snowflake credentials are only needed for `DATA_MODE=live`; see `.env.example`.
 
 ---
 
-## ⚠️ Data notes and limitations
+## Data and limitations
 
-**All data in this repo is synthetic.** The companies, contacts, deals, and enablement content are invented; any resemblance to a real business is coincidental. The dataset stops on **2026-05-31**. Three consequences, handled explicitly:
+All data in this repo is synthetic; any resemblance to a real business is coincidental. The dataset stops on 2026-05-31, which has three consequences handled in code:
 
-- **Anchored "today."** `AS_OF_DATE` defaults to `2026-06-01`, one day after the data ends. On the real clock the last six weeks of the dataset would be empty and every account would look dead. All relative-time logic reads from this anchor. On production data the constant is deleted.
-- **Corrupt values excluded.** The usage data contains negative MAU and login values, which are impossible. They are excluded from trend math, and the assistant says it did so rather than silently dropping them.
-- **Fixed thresholds.** Signal thresholds (for example, a 20% MAU drop as a decline, a 90-day renewal window) are hardcoded in `signals.py`. Custom-threshold requests ("flag usage drops over 25%") are not processed. Out of scope for the prototype.
+- `AS_OF_DATE` defaults to 2026-06-01, one day after the data ends, so relative-time logic behaves as it would in production. On real data the constant is removed.
+- The usage data contains impossible negative values. They are excluded from trend math, and the assistant says it did so rather than dropping them silently.
+- Signal thresholds (for example a 20% MAU drop, or a 90-day renewal window) are hardcoded in `signals.py`. Custom-threshold requests are out of scope.
 
----
+## Out of scope
 
-## ✂️ Out of scope for the prototype
-
-Agentic actions (drafting emails, writing to the CRM), latent-intent inference, cross-session memory, custom thresholds, and integrations (Slack, email, calendar, call-recording tools). Each is a deliberate cut with a stated upgrade path, not a gap. The digest's send step is a labeled stub; in production it is a Slack DM per AE.
-
----
+Agentic actions (drafting emails, writing to the CRM), latent-intent inference, cross-session memory, custom thresholds, and integrations (Slack, email, calendar, call recording). Each is a deliberate cut with an upgrade path. The digest's send step is a stub; in production it is a Slack DM per AE.
 
 ## About
 
-Built by Sanjeev Rao as an independent demonstration of grounded, eval-driven AI product design. If you are hiring for AI product or engineering work, or want something like this built for your sales team, the code and the [quality journey](QUALITY_JOURNEY.md) are the fastest way to see how I work.
+Built by Sanjeev Rao as an independent demonstration of grounded, eval-driven AI product work. If you are hiring or want something like this for your sales team, the code and the [quality journey](QUALITY_JOURNEY.md) show how I work.
 
-*All data is synthetic. This project is not affiliated with any company whose product category it resembles.*
+All data is synthetic. This project is not affiliated with any company whose product category it resembles.
