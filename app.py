@@ -11,6 +11,7 @@ Run:  streamlit run app.py
 
 from __future__ import annotations
 
+import base64
 import csv
 import html
 import os
@@ -37,6 +38,101 @@ import db  # noqa: E402
 FEEDBACK_FILE = Path(__file__).parent / "feedback" / "feedback.csv"
 
 st.set_page_config(page_title="AE Copilot", page_icon="🧭", layout="centered")
+
+import streamlit.components.v1 as components  # noqa: E402
+
+# Welcome dialog: widen it a little beyond the default "small", and darken the
+# backdrop so the app behind recedes. Targets Streamlit's dialog DOM.
+st.markdown(
+    "<style>"
+    "div[data-testid='stDialog'] div[role='dialog']{width:37rem !important;"
+    "max-width:94vw !important;}"
+    "div[data-testid='stDialog']{background-color:rgba(0,0,0,0.74) !important;}"
+    "</style>",
+    unsafe_allow_html=True,
+)
+
+GITHUB_URL = "https://github.com/productfoundry101/AccountManager-Copilot"
+
+# GitHub mark as an inline (base64) SVG so it renders without any icon font,
+# tinted to a muted grey to match the sidebar.
+_GH_MARK = (
+    "<svg xmlns='http://www.w3.org/2000/svg' width='15' height='15' "
+    "viewBox='0 0 16 16' fill='#ffffff'><path d='M8 0C3.58 0 0 3.58 0 8c0 3.54 "
+    "2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53"
+    "-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08"
+    ".58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89"
+    "-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82"
+    ".64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1"
+    ".16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54"
+    ".73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8"
+    "c0-4.42-3.58-8-8-8z'/></svg>"
+)
+_GH_ICON = "data:image/svg+xml;base64," + base64.b64encode(_GH_MARK.encode()).decode()
+_GH_LINK_HTML = (
+    "<div style='text-align:center;margin-top:8px;'>"
+    f"<a href='{GITHUB_URL}' target='_blank' "
+    "style='color:#ffffff;text-decoration:none;font-size:13px;'>"
+    f"<img src=\"{_GH_ICON}\" style='vertical-align:-3px;margin-right:7px;'/>"
+    "View the code on GitHub</a></div>"
+)
+
+# --- welcome overlay ---------------------------------------------------------
+# Shown once per session (reopenable from the sidebar). Rendered as a
+# self-contained component so the Tabler icons and Lato font load and the look
+# is identical regardless of the visitor's theme.
+
+_WELCOME_HTML = """<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:transparent;font-family:Lato,'Helvetica Neue',Arial,sans-serif;}
+.wrap{padding:2px 6px 12px;}
+.lead{margin:0 0 10px;font-size:15px;line-height:1.6;color:#d6d7dc;}
+.sub{margin:0;font-size:15px;line-height:1.6;color:#9a9ca4;}
+.stats{margin:20px 0 0;padding:15px 0;border-top:1px solid rgba(255,255,255,0.08);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:32px;}
+.stat{display:flex;align-items:baseline;gap:9px;}
+.stat b{font-size:25px;font-weight:700;color:#f2f2f4;line-height:1;}
+.stat span{font-size:14px;color:#9a9ca4;}
+.cap{margin:10px 0 0;font-size:13.5px;line-height:1.55;color:#83858e;}
+.lbl{margin:20px 0 12px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8b8d96;}
+.feat{display:flex;gap:13px;align-items:flex-start;margin-bottom:13px;}
+.feat i{font-size:18px;color:#ff6a3d;line-height:1.5;}
+.feat div{font-size:14px;line-height:1.55;color:#dfe3ea;}
+.bar{margin:22px 0 0;padding:16px 0 2px;border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.bar .note{font-size:12.5px;line-height:1.5;color:#83858e;max-width:280px;}
+.bar button{background:#ededf0;color:#17171b;border:none;border-radius:6px;padding:10px 18px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+.bar button:hover{background:#ffffff;}
+</style></head><body>
+<div class="wrap">
+  <p class="lead">A grounded AI assistant for account managers who spend 5+ hours preparing for a single renewal or a new sales call.</p>
+  <p class="sub">It surfaces the renewals quietly slipping away and answers any account question with a source on every fact.</p>
+  <div class="stats">
+    <div class="stat"><b>6</b><span>live CRM tables</span></div>
+    <div class="stat"><b>7</b><span>knowledge documents</span></div>
+  </div>
+  <p class="cap">It reads your CRM and your playbooks in real time, and never guesses.</p>
+  <div class="lbl">What it does</div>
+  <div class="feat"><i class="ti ti-bell"></i><div>A proactive digest every morning at 9, flagging at-risk accounts to Slack or email before anyone asks.</div></div>
+  <div class="feat"><i class="ti ti-message-2"></i><div>A live chat assistant that answers in plain language, with the source behind every fact.</div></div>
+  <div class="feat"><i class="ti ti-calculator"></i><div>All facts, patterns and numbers are determined using code, so they're never made up; only the explanation is generated by AI.</div></div>
+  <div class="feat"><i class="ti ti-refresh"></i><div>A feedback loop that turns reported discrepancies into new tests, so it keeps improving.</div></div>
+  <div class="bar">
+    <div class="note">Reopen anytime from "How it works" in the sidebar.</div>
+    <button id="explore">Explore the demo</button>
+  </div>
+</div>
+<script>
+document.getElementById('explore').addEventListener('click', function(){
+  try{ var x = window.parent.document.querySelector('button[aria-label="Close"]'); if(x){ x.click(); } }catch(e){}
+});
+</script>
+</body></html>"""
+
+
+@st.dialog("Account Manager Copilot", width="small")
+def show_welcome():
+    components.html(_WELCOME_HTML, height=585, scrolling=False)
 
 
 # --- helpers -----------------------------------------------------------------
@@ -437,10 +533,17 @@ with st.sidebar:
         if st.button(q, key=f"sugg_{i}", use_container_width=True):
             start_conversation(q)
     st.divider()
-    st.caption("Environment")
-    st.caption(f"data mode: {db.DATA_MODE}")
-    st.caption(f"as-of date: {db.AS_OF}")
-    st.caption(f"model: {agent.PROVIDER}")
+    if st.button("How it works", use_container_width=True):
+        st.session_state.open_welcome = True
+        st.rerun()
+    st.markdown(_GH_LINK_HTML, unsafe_allow_html=True)
+
+# --- welcome overlay: auto-open once per session, reopen from the sidebar ----
+if not st.session_state.get("welcome_seen"):
+    st.session_state.welcome_seen = True
+    st.session_state.open_welcome = True
+if st.session_state.pop("open_welcome", False):
+    show_welcome()
 
 # Reset conversation when switching identity.
 if st.session_state.get("ae_email") != ae_email:
