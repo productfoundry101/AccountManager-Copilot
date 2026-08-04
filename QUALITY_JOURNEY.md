@@ -1,6 +1,6 @@
-# Quality journey: how this product was tested, broken, and hardened
+# Quality journey: how this product was tested, broken, and improved
 
-An honest audit of every failure found during the build, how each was
+An audit of every failure found during the build, how each was
 diagnosed, at which layer it was fixed, and what now prevents its return.
 All failures below were real (observed in traces or eval runs), and every
 number was verified against SQL/pandas ground truth computed independently
