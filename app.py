@@ -41,13 +41,16 @@ st.set_page_config(page_title="AE Copilot", page_icon="🧭", layout="centered")
 
 import streamlit.components.v1 as components  # noqa: E402
 
-# Welcome dialog: widen it a little beyond the default "small", and darken the
-# backdrop so the app behind recedes. Targets Streamlit's dialog DOM.
+# Welcome dialog styling. The width lives on the modal wrapper; setting a width
+# there also drops its auto-centering, so we re-add margin:auto to keep it
+# centered. Backdrop is darkened via the overlay element.
 st.markdown(
     "<style>"
-    "div[data-testid='stDialog'] div[role='dialog']{width:37rem !important;"
-    "max-width:94vw !important;}"
-    "div[data-testid='stDialog']{background-color:rgba(0,0,0,0.74) !important;}"
+    "div[data-testid='stDialog'] > div,"
+    "div[data-testid='stDialog'] > div > div{"
+    "width:40rem !important;max-width:94vw !important;"
+    "margin-left:auto !important;margin-right:auto !important;}"
+    "div[data-testid='stDialog']{background-color:rgba(0,0,0,0.72) !important;}"
     "</style>",
     unsafe_allow_html=True,
 )
@@ -99,8 +102,8 @@ html,body{margin:0;padding:0;background:transparent;font-family:Lato,'Helvetica 
 .feat{display:flex;gap:13px;align-items:flex-start;margin-bottom:13px;}
 .feat i{font-size:18px;color:#ff6a3d;line-height:1.5;}
 .feat div{font-size:14px;line-height:1.55;color:#dfe3ea;}
-.bar{margin:22px 0 0;padding:16px 0 2px;border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
-.bar .note{font-size:12.5px;line-height:1.5;color:#83858e;max-width:280px;}
+.bar{margin:22px 0 0;padding:16px 0 4px;border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:nowrap;}
+.bar .note{font-size:12.5px;line-height:1.5;color:#83858e;flex:1 1 auto;}
 .bar button{background:#ededf0;color:#17171b;border:none;border-radius:6px;padding:10px 18px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
 .bar button:hover{background:#ffffff;}
 </style></head><body>
@@ -130,9 +133,9 @@ document.getElementById('explore').addEventListener('click', function(){
 </body></html>"""
 
 
-@st.dialog("Account Manager Copilot", width="small")
+@st.dialog("Account Manager Copilot", width="large")
 def show_welcome():
-    components.html(_WELCOME_HTML, height=585, scrolling=False)
+    components.html(_WELCOME_HTML, height=550, scrolling=False)
 
 
 # --- helpers -----------------------------------------------------------------
